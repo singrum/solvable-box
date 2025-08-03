@@ -11,7 +11,7 @@ export default function Header() {
         </div>
         <ActionGroup />
       </div>
-      <div className="text-xs">
+      <p className="text-xs">
         해결 가능한 문제들로 구성된{" "}
         <a
           href="https://www.gamesaien.com/game/fruit_box_a/"
@@ -22,7 +22,8 @@ export default function Header() {
           후르츠 박스
         </a>
         의 클론.
-      </div>
+      </p>
+      <p className="text-xs">합이 10이 되도록 숫자들을 묶어 모두 없애세요!</p>
     </div>
   );
 }
