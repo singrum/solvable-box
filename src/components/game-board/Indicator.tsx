@@ -56,7 +56,7 @@ export default function Indicator() {
     >
       {rect && (
         <div
-          className="absolute border border-blue-500 bg-blue-200/30 pointer-events-none"
+          className="absolute border border-primary bg-primary/20 pointer-events-none"
           style={{
             left: rect.left,
             top: rect.top,

@@ -36,7 +36,7 @@ function getRectIdBoard(row: number, col: number, maxCellNum: number) {
 
   while (true) {
     const emptyCells = findEmptyCells(board);
-    if (emptyCells.length <= maxCellNum) {
+    if (emptyCells.length <= maxCellNum + 1) {
       fillRect(board, [0, 0], [board.length - 1, board[0].length - 1], cnt);
       break;
     }

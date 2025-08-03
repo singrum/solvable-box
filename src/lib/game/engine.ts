@@ -2,20 +2,23 @@ import { cloneDeep, sum } from "lodash";
 import { generateBoard } from "./algorithms";
 
 export class Engine {
-  level: number;
   width: number;
   height: number;
   board: number[][];
-  constructor() {
-    this.level = 1;
-    this.width = 10;
-    this.height = 10;
-    this.board = generateBoard(10, 10, 10, 4);
+  history: number[][][];
+  constructor(size: number) {
+    this.width = size;
+    this.height = size;
+    this.board = generateBoard(size, size, 10, 3);
+    this.history = [];
   }
   resetBoard() {
     this.board = generateBoard(this.width, this.height, 10, 4);
   }
-  onDrawRect(startPos: [number, number], endPos: [number, number]) {
+  getInsideItems(
+    startPos: [number, number],
+    endPos: [number, number]
+  ): [number, number][] {
     const items: [number, number][] = [];
     for (let i = 0; i < this.width; i++) {
       for (let j = 0; j < this.height; j++) {
@@ -29,11 +32,16 @@ export class Engine {
         }
       }
     }
-
+    return items;
+  }
+  onDrawRect(startPos: [number, number], endPos: [number, number]) {
+    const items = this.getInsideItems(startPos, endPos);
     if (sum(items.map(([i, j]) => this.board[i][j])) === 10) {
+      this.saveHistory(cloneDeep(this.getBoardState()));
       items.forEach(([i, j]) => {
         this.board[i][j] = 0;
       });
+
       return true;
     } else {
       return false;
@@ -41,6 +49,14 @@ export class Engine {
   }
   getBoardState(): number[][] {
     return cloneDeep(this.board);
+  }
+  saveHistory(board: number[][]) {
+    this.history.push(board);
+  }
+  undo() {
+    if (this.history.length > 0) {
+      this.board = this.history.pop()!;
+    }
   }
 }
 

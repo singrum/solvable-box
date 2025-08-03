@@ -1,15 +1,18 @@
+import ActionBar from "./components/action-bar/action-bar";
 import GameBoard from "./components/game-board/game-board";
-import GameHeader from "./components/game-header/game-header";
 import Header from "./components/header/header";
 
 function App() {
   // const isMounted = useMount();
 
   return (
-    <div className="space-y-4 max-w-screen-sm w-full">
+    <div className="w-full flex flex-col">
       <Header />
-      <GameHeader />
-      <GameBoard />
+
+      <div className="flex-1 flex items-center justify-center flex-col">
+        <GameBoard />
+        <ActionBar />
+      </div>
     </div>
   );
 }
