@@ -21,7 +21,7 @@ export default function Apple({
       const rect = ref.current!.getBoundingClientRect();
       const size = rect.width;
       setAppleSize(size);
-      setFontSize(size * 0.4); // 💡 원하는 비율로 조절
+      setFontSize(size * 0.5); // 💡 원하는 비율로 조절
     };
 
     updateSize(); // 초기 실행
