@@ -3,9 +3,13 @@ import { range, sample, times } from "lodash";
 export function generateBoard(
   row: number,
   col: number,
-  rectSum: number
+  rectSum: number,
+  maxCellNum: number
 ): number[][] {
-  const board = getRectIdBoard(row, col, rectSum);
+  if (rectSum < maxCellNum) {
+    throw Error("rectSum < maxCellNum");
+  }
+  const board = getRectIdBoard(row, col, maxCellNum);
   const idCellMap: Record<number, [number, number][]> = {};
   for (let i = 0; i < row; i++) {
     for (let j = 0; j < row; j++) {
@@ -17,11 +21,10 @@ export function generateBoard(
   }
 
   for (const cells of Object.values(idCellMap)) {
-    console.log(cells);
     const partition = randomPartition(rectSum, cells.length);
 
-    cells.forEach((e) => {
-      board[(e[0], e[1])] = partition;
+    cells.forEach((e, i) => {
+      board[e[0]][e[1]] = partition[i];
     });
   }
   return board;
@@ -45,7 +48,10 @@ function getRectIdBoard(row: number, col: number, maxCellNum: number) {
     }
     const validRects = getValidRectsFrom(board, cell, maxCellNum);
 
-    const endPoint = sample(validRects);
+    const endPoint = weightedSample(
+      validRects.map((e) => [e[0], e[1]] as [number, number]),
+      validRects.map((e) => e[2])
+    );
 
     if (!endPoint) {
       console.log("illegal");
@@ -54,6 +60,7 @@ function getRectIdBoard(row: number, col: number, maxCellNum: number) {
 
     fillRect(board, cell, endPoint, cnt++);
   }
+
   return board;
 }
 
@@ -87,12 +94,12 @@ function getValidRectsFromSide(
   coord: [number, number],
   i: number,
   maxCellNum: number
-): number[] {
+): [number, number][] {
   const rowRangeIdx = [coord[0], i].sort();
   rowRangeIdx[1] += 1;
   const rowRange = board.slice(...rowRangeIdx);
 
-  const colsResult: number[] = [];
+  const colsResult: [number, number][] = [];
 
   let currEmptyCells = 0;
   let j = coord[1];
@@ -102,7 +109,7 @@ function getValidRectsFromSide(
     currEmptyCells += rowRange.map((e) => e[j]).filter((e) => !e).length;
     if (currEmptyCells > maxCellNum) break;
     if (currEmptyCells > 1 && (coord[0] !== i || coord[1] !== j)) {
-      colsResult.push(j);
+      colsResult.push([j, 10 - currEmptyCells]);
     }
     j++;
   }
@@ -118,7 +125,7 @@ function getValidRectsFromSide(
     currEmptyCells += rowRange.map((e) => e[j]).filter((e) => !e).length;
     if (currEmptyCells > maxCellNum) break;
     if (currEmptyCells > 1 && (coord[0] !== i || coord[1] !== j)) {
-      colsResult.push(j);
+      colsResult.push([j, (10 - currEmptyCells) * 10]);
     }
 
     j--;
@@ -131,7 +138,7 @@ function getValidRectsFrom(
   board: number[][],
   coord: [number, number],
   maxCellNum: number
-): [number, number][] {
+): [number, number, number][] {
   const row = board.length;
 
   const result: ReturnType<typeof getValidRectsFrom> = [];
@@ -139,7 +146,7 @@ function getValidRectsFrom(
   for (let i = 0; i < row; i++) {
     const cols = getValidRectsFromSide(board, coord, i, maxCellNum);
 
-    result.push(...cols.map((col) => [i, col] as [number, number]));
+    result.push(...cols.map((col) => [i, ...col] as [number, number, number]));
   }
 
   return result;
@@ -185,4 +192,23 @@ function randomPartition(n: number, k: number): number[] {
   }
 
   return parts;
+}
+function weightedSample<T>(items: T[], weights: number[]): T {
+  if (items.length !== weights.length) {
+    throw new Error("items and weights must have the same length");
+  }
+
+  const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+  const r = Math.random() * totalWeight;
+
+  let cumulative = 0;
+  for (let i = 0; i < items.length; i++) {
+    cumulative += weights[i];
+    if (r < cumulative) {
+      return items[i];
+    }
+  }
+
+  // fallback: return last item (to handle floating-point precision)
+  return items[items.length - 1];
 }

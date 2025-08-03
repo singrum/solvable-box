@@ -5,7 +5,6 @@ import App from "./app";
 import { ThemeProvider } from "./components/theme-provider";
 import "./global.css";
 import Layout from "./layout";
-import { generateBoard } from "./lib/game/algorithms";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -16,4 +15,3 @@ createRoot(document.getElementById("root")!).render(
     </ThemeProvider>
   </StrictMode>
 );
-generateBoard(10, 10, 10);
