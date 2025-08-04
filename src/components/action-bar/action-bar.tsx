@@ -13,7 +13,7 @@ export default function ActionBar() {
   const disabled = useMemo(() => engine.history.length === 0, [board, engine]);
   const gameState = useGameStore((e) => e.gameState);
   return (
-    <div className="max-w-screen-sm w-full flex justify-between py-6 px-4 gap-2">
+    <div className="max-w-screen-sm w-full flex justify-between py-6 px-4 gap-2 pt-0">
       <div className="flex gap-2 items-center flex-1 ">
         <SettingsDialog />
         <SeedInput />

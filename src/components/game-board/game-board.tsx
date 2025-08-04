@@ -54,7 +54,7 @@ export default function GameBoard() {
         onPointerUp={handlePointerUp}
         onPointerCancel={() => (dragging.current = false)}
         onPointerLeave={() => (dragging.current = false)}
-        className="select-none touch-none flex flex-col justify-center items-center max-w-screen-sm w-full p-2 py-12"
+        className="select-none touch-none flex flex-col justify-center items-center max-w-screen-sm w-full p-4 py-12"
         style={{}}
       >
         <AppleBox />
