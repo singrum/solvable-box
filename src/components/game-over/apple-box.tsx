@@ -14,7 +14,7 @@ export default function AppleBox({ className }: { className?: string }) {
       setCurrentIndex((prev) => {
         return (prev + 1) % history.length;
       });
-    }, 1000);
+    }, 500);
 
     return () => clearInterval(interval);
   }, [history.length]);
