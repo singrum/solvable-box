@@ -28,7 +28,7 @@ export const useMount = (): boolean => {
     }
 
     const size = Number(sizeParam);
-    if (!isNaN(size) && size > 0 && size <= 20) {
+    if (!isNaN(size) && size >= 5 && size <= 19) {
       setSize(size, seedParam);
     }
 
