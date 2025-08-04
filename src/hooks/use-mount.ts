@@ -16,22 +16,28 @@ export const useMount = (): boolean => {
     let seedParam = searchParams.get("seed");
 
     // 기본값 설정
-    if (!sizeParam) sizeParam = "10";
     if (!seedParam) seedParam = getRandomSeed();
 
+    // sizeParam 검사 및 기본값 지정
+    let size = Number(sizeParam);
+    if (isNaN(size) || size < 5 || size > 19) {
+      size = 10;
+      sizeParam = "10";
+    }
+
     // URL에 기본값이 없다면 추가 (replace: true로 히스토리 누적 방지)
-    if (!searchParams.has("size") || !searchParams.has("seed")) {
+    if (
+      !searchParams.has("size") ||
+      !searchParams.has("seed") ||
+      sizeParam !== searchParams.get("size")
+    ) {
       const params = new URLSearchParams(searchParams.toString());
-      params.set("size", sizeParam);
+      if (sizeParam) params.set("size", sizeParam);
       params.set("seed", seedParam);
       navigate(`?${params.toString()}`, { replace: true });
     }
 
-    const size = Number(sizeParam);
-    if (!isNaN(size) && size >= 5 && size <= 19) {
-      setSize(size, seedParam);
-    }
-
+    setSize(size, seedParam);
     setIsMounted(true);
   }, [setSize, setSeed, searchParams, isMounted, navigate]);
 
