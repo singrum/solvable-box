@@ -3,7 +3,7 @@ import ActionGroup from "./action-group";
 
 export default function Header() {
   return (
-    <div className="space-y-2 max-w-screen-sm w-full mx-auto py-6 px-4">
+    <div className="space-y-2 max-w-screen-sm w-full mx-auto py-6 px-4 pb-0">
       <div className="flex justify-between">
         <div className="text-xl font-medium flex gap-2 items-center">
           <Box />

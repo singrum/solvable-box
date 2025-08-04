@@ -16,7 +16,7 @@ export const useMount = (): boolean => {
     let seedParam = searchParams.get("seed");
 
     // 기본값 설정
-    if (!sizeParam) sizeParam = "6";
+    if (!sizeParam) sizeParam = "10";
     if (!seedParam) seedParam = getRandomSeed();
 
     // URL에 기본값이 없다면 추가 (replace: true로 히스토리 누적 방지)

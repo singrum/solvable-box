@@ -45,7 +45,7 @@ export default function Indicator() {
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 left-0 w-full h-full"
+      className="absolute top-0 left-0 w-full h-full "
       onMouseDown={handleStart}
       onMouseMove={handleMove}
       onMouseUp={handleEnd}
