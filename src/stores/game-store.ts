@@ -26,7 +26,7 @@ interface GameStore {
   setAppleSize: (v: number) => void;
 
   size: number;
-  setSize: (size: number) => void;
+  setSize: (size: number, seed: string) => void;
 
   undo: () => void;
 
@@ -65,14 +65,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   size: defaultSize,
-  setSize: (size: number) => {
-    const randomString = getRandomSeed();
-    const engine = new Engine(size, randomString);
+  setSize: (size: number, seed: string) => {
+    const engine = new Engine(size, seed);
     set({
       size,
       engine,
       boardState: engine.getBoardState(),
-      seed: randomString,
+      seed: seed,
       gameState: "playing",
     });
   },

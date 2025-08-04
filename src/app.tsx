@@ -2,22 +2,24 @@ import ActionBar from "./components/action-bar/action-bar";
 import GameBoard from "./components/game-board/game-board";
 import GameOver from "./components/game-over/game-over";
 import Header from "./components/header/header";
+import { useMount } from "./hooks/use-mount";
 import { useGameStore } from "./stores/game-store";
 
 function App() {
-  // const isMounted = useMount();
+  const isMounted = useMount();
   const gameState = useGameStore((e) => e.gameState);
-  return (
-    <div className="w-full flex flex-col">
-      <Header />
+  if (isMounted)
+    return (
+      <div className="w-full flex flex-col">
+        <Header />
 
-      <div className="flex-1 flex items-center justify-center flex-col">
-        {gameState === "playing" ? <GameBoard /> : <GameOver />}
+        <div className="flex-1 flex items-center justify-center flex-col">
+          {gameState === "playing" ? <GameBoard /> : <GameOver />}
 
-        <ActionBar />
+          <ActionBar />
+        </div>
       </div>
-    </div>
-  );
+    );
 }
 
 export default App;

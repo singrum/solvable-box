@@ -22,9 +22,10 @@ import {
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { useGameStore } from "@/stores/game-store";
+import { getRandomSeed, useGameStore } from "@/stores/game-store";
 import { range } from "lodash";
 import { ChevronDown, MoveRight, X } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export function SettingsDialog() {
   const [open, setOpen] = React.useState(false);
@@ -81,6 +82,17 @@ function ProfileForm({
   setOpen,
 }: { setOpen: (open: boolean) => void } & React.ComponentProps<"div">) {
   const setSize = useGameStore((e) => e.setSize);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  // size, seed 둘 다 받아서 한꺼번에 반영
+  const updateParams = (size: string, seed: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("size", size);
+    params.set("seed", seed);
+    navigate(`?${params.toString()}`, { replace: true });
+  };
+
   return (
     <div className={cn("grid items-start gap-6", className)}>
       {range(5, 20).map((e) => (
@@ -89,8 +101,10 @@ function ProfileForm({
           size="lg"
           className="flex justify-between text-base"
           onClick={() => {
+            const seed = getRandomSeed();
             setOpen(false);
-            setSize(e);
+            setSize(e, seed);
+            updateParams(String(e), seed);
           }}
         >
           <div className="flex items-center justify-center">
