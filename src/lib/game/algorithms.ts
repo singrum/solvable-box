@@ -1,15 +1,17 @@
-import { range, sample, times } from "lodash";
-
+import { range, times } from "lodash";
+import seedrandom from "seedrandom";
 export function generateBoard(
   row: number,
   col: number,
   rectSum: number,
-  maxCellNum: number
+  maxCellNum: number,
+  seed: string
 ): number[][] {
+  const rng = seedrandom(String(seed));
   if (rectSum < maxCellNum) {
     throw Error("rectSum < maxCellNum");
   }
-  const board = getRectIdBoard(row, col, maxCellNum);
+  const board = getRectIdBoard(row, col, maxCellNum, rng);
   const idCellMap: Record<number, [number, number][]> = {};
   for (let i = 0; i < row; i++) {
     for (let j = 0; j < row; j++) {
@@ -21,7 +23,7 @@ export function generateBoard(
   }
 
   for (const cells of Object.values(idCellMap)) {
-    const partition = randomPartition(rectSum, cells.length);
+    const partition = randomPartition(rectSum, cells.length, rng);
 
     cells.forEach((e, i) => {
       board[e[0]][e[1]] = partition[i];
@@ -30,8 +32,13 @@ export function generateBoard(
   return board;
 }
 
-function getRectIdBoard(row: number, col: number, maxCellNum: number) {
-  const board: number[][] = times(row, () => times(col, () => 0));
+function getRectIdBoard(
+  row: number,
+  col: number,
+  maxCellNum: number,
+  rng: () => number
+) {
+  const board: number[][] = getZeros(row, col);
   let cnt = 1;
 
   while (true) {
@@ -40,7 +47,7 @@ function getRectIdBoard(row: number, col: number, maxCellNum: number) {
       fillRect(board, [0, 0], [board.length - 1, board[0].length - 1], cnt);
       break;
     }
-    const cell = sample(emptyCells);
+    const cell = sampleWithRng(emptyCells, rng);
 
     if (!cell) {
       console.log("illegal");
@@ -50,7 +57,8 @@ function getRectIdBoard(row: number, col: number, maxCellNum: number) {
 
     const endPoint = weightedSample(
       validRects.map((e) => [e[0], e[1]] as [number, number]),
-      validRects.map((e) => e[2])
+      validRects.map((e) => e[2]),
+      rng
     );
 
     if (!endPoint) {
@@ -173,13 +181,12 @@ function fillRect(
   }
 }
 
-function randomPartition(n: number, k: number): number[] {
+function randomPartition(n: number, k: number, rng: () => number): number[] {
   if (k <= 0 || k > n) throw new Error("Invalid k");
 
-  // 1씩은 반드시 필요하므로 n-k만큼을 k개로 나눠 분할 생성
   const cuts = new Set<number>();
   while (cuts.size < k - 1) {
-    const cut = Math.floor(Math.random() * (n - 1)) + 1; // [1, n-1)
+    const cut = Math.floor(rng() * (n - 1)) + 1; // [1, n-1]
     cuts.add(cut);
   }
 
@@ -193,13 +200,18 @@ function randomPartition(n: number, k: number): number[] {
 
   return parts;
 }
-function weightedSample<T>(items: T[], weights: number[]): T {
+
+function weightedSample<T>(
+  items: T[],
+  weights: number[],
+  rng: () => number
+): T {
   if (items.length !== weights.length) {
     throw new Error("items and weights must have the same length");
   }
 
   const totalWeight = weights.reduce((sum, w) => sum + w, 0);
-  const r = Math.random() * totalWeight;
+  const r = rng() * totalWeight;
 
   let cumulative = 0;
   for (let i = 0; i < items.length; i++) {
@@ -209,6 +221,16 @@ function weightedSample<T>(items: T[], weights: number[]): T {
     }
   }
 
-  // fallback: return last item (to handle floating-point precision)
+  // fallback
   return items[items.length - 1];
+}
+
+function sampleWithRng<T>(array: T[], rng: () => number): T | undefined {
+  if (array.length === 0) return undefined;
+  const idx = Math.floor(rng() * array.length);
+  return array[idx];
+}
+
+export function getZeros(row: number, col: number) {
+  return times(row, () => times(col, () => 0));
 }

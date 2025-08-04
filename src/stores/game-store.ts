@@ -1,13 +1,18 @@
 // engine-store.ts
 
+import { fire } from "@/lib/confetti";
 import { Engine } from "@/lib/game/engine";
 import { create } from "zustand";
 
-const initialEngine = new Engine(10);
+const randomString = getRandomSeed();
+const defaultSize = 5;
+const initialEngine = new Engine(defaultSize, randomString);
 
 interface GameStore {
+  gameState: "playing" | "end";
+  seed: string;
   engine: Engine;
-  resetGame: () => void;
+
   startPos?: [number, number] | undefined;
   endPos?: [number, number] | undefined;
   currentPos?: [number, number]; // 추가
@@ -26,13 +31,17 @@ interface GameStore {
   undo: () => void;
 
   restart: () => void;
+
+  setSeed: (value: string) => void;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
+  gameState: "playing",
+  seed: randomString,
   engine: initialEngine,
 
   boardState: initialEngine.getBoardState(),
-  resetGame: () => initialEngine.resetBoard(),
+
   setStartPos: (pos: [number, number] | undefined) => {
     set({ startPos: pos });
   },
@@ -44,6 +53,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (!startPos || !endPos) return;
     if (engine.onDrawRect(startPos, endPos)) {
       set({ boardState: engine.getBoardState() });
+      if (engine.board.every((row) => row.every((cell) => cell === 0))) {
+        fire();
+        set({ gameState: "end" });
+      }
     }
   },
 
@@ -51,11 +64,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ appleSize: v });
   },
 
-  size: 10,
+  size: defaultSize,
   setSize: (size: number) => {
-    console.log(size);
-    const engine = new Engine(size);
-    set({ size, engine, boardState: engine.getBoardState() });
+    const randomString = getRandomSeed();
+    const engine = new Engine(size, randomString);
+    set({
+      size,
+      engine,
+      boardState: engine.getBoardState(),
+      seed: randomString,
+      gameState: "playing",
+    });
   },
 
   undo: () => {
@@ -65,7 +84,29 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
   restart: () => {
     const { size } = get();
-    const engine = new Engine(size);
-    set({ engine, boardState: engine.getBoardState() });
+    const randomString = getRandomSeed();
+    const engine = new Engine(size, randomString);
+    set({
+      engine,
+      boardState: engine.getBoardState(),
+      seed: randomString,
+      gameState: "playing",
+    });
+  },
+
+  setSeed: (value: string) => {
+    const { size } = get();
+
+    const engine = new Engine(size, value);
+    set({
+      engine,
+      boardState: engine.getBoardState(),
+      seed: value,
+      gameState: "playing",
+    });
   },
 }));
+
+export function getRandomSeed() {
+  return String(Math.floor(Math.random() * 10_000_000));
+}

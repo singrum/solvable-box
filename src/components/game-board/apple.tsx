@@ -7,7 +7,7 @@ export default function Apple({
   className,
   status,
 }: {
-  status: "unselected" | "selected" | "satisfied";
+  status?: "unselected" | "selected" | "satisfied";
 } & React.ComponentProps<"div">) {
   const ref = useRef<HTMLDivElement>(null);
   const [fontSize, setFontSize] = useState(0);

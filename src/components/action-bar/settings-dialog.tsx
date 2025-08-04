@@ -30,7 +30,6 @@ export function SettingsDialog() {
   const [open, setOpen] = React.useState(false);
   const isDesktop = !useIsMobile();
   const size = useGameStore((e) => e.size);
-  console.log(size);
 
   if (isDesktop) {
     return (

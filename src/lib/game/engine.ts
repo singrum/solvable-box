@@ -6,15 +6,14 @@ export class Engine {
   height: number;
   board: number[][];
   history: number[][][];
-  constructor(size: number) {
+
+  constructor(size: number, seed: string) {
     this.width = size;
     this.height = size;
-    this.board = generateBoard(size, size, 10, 3);
+    this.board = generateBoard(size, size, 10, 3, seed);
     this.history = [];
   }
-  resetBoard() {
-    this.board = generateBoard(this.width, this.height, 10, 4);
-  }
+
   getInsideItems(
     startPos: [number, number],
     endPos: [number, number]
